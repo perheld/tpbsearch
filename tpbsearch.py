@@ -3,7 +3,7 @@ import requests
 import sys
 
 
-def main(argv):
+def searchtpb(argv):
     searchurl = ""
     for idx, arg in enumerate(argv):
         if idx == 0:
@@ -12,14 +12,34 @@ def main(argv):
             searchurl = arg
         else:
             searchurl = searchurl + "%20" + arg
-    r  = requests.get("https://thepiratebay.org/search/"+searchurl)
+
+    return "https://thepiratebay.org/search/"+searchurl
+
+
+def findmagnet(url):
+    r  = requests.get(url)
     data = r.text
     soup = BeautifulSoup(data, "html.parser")
     for link in soup.find_all('a'):
         l = link.get('href')
         if 'magnet' in l:
-            print(l)
-            return
+            return l
+    return ""
+
+
+def main(argv):
+
+    if len(argv) < 2:
+        return
+
+    url = searchtpb(argv)
+
+    if not url:
+        return
+
+    magneturl = findmagnet(url)
+    print magneturl
+
 
 if __name__ == "__main__":
     main(sys.argv)
